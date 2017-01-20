@@ -31,9 +31,13 @@ namespace ParserDecenaTerrestre
 		/// <returns></returns>
 		public static Documento Parse(string path, string[][] plantillas, ref string r)
 		{
-			//la plantilla es un subconjunto de las columnas del excel        
+			return Parse(path, plantillas, 1, ref r);
+		}
+
+		public static Documento Parse(string path, string[][] plantillas, int sheet, ref string r) { 
+			//la plantilla es un subconjunto de las columnas del excel
 			Documento d = null;
-			var t = new Tabla(path, ref r);
+			var t = new Tabla(path, sheet, ref r);
 			if (r == null)
 			{
 				bool b = true;

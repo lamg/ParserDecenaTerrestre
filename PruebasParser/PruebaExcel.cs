@@ -100,17 +100,25 @@ namespace PruebasParser {
             Assert.IsTrue(r == null && d != null && d.Tabla.GetLength(1) == 3);
         }
 
-        [Test()]
-        public void TestBook1() {
-            string[][] p = { new string[] { "col1", "col2", "col3" } };
-            string r = null;
-            Tabla t = new Tabla(book1, ref r);
-            int n = 3;
-            var f = Parser.ObtFila(t, ref r, ref n);
-            Assert.IsTrue(f != null);
+		[Test()]
+		public void TestBook1()
+		{
+			string[][] p = { new string[] { "col1", "col2", "col3" } };
+			string r = null;
+			Tabla t = new Tabla(book1, ref r);
+			int n = 3;
+			var f = Parser.ObtFila(t, ref r, ref n);
+			Assert.IsTrue(f != null);
 
-            Documento d = Parser.Parse(book1, p, ref r);
-            Assert.IsTrue(d != null && d.Tabla.GetLength(0) == 3);
-        }
+			Documento d = Parser.Parse(book1, p, ref r);
+			Assert.IsTrue(d != null && d.Tabla.GetLength(0) == 3);
+
+			d = Parser.Parse(book1, p, 2, ref r);
+			Assert.IsTrue(d != null && r == null);
+
+			d = Parser.Parse(book1, p, 3, ref r);
+			Assert.IsTrue(d == null && r != null);
+
+		}
     }
 }

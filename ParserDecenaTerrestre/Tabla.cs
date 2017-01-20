@@ -9,16 +9,23 @@ namespace ParserDecenaTerrestre
 		ExcelWorksheet w;
 		ExcelPackage p;
 
-		public Tabla(string path, ref string r)
+		public Tabla(string path, ref string r):this(path,1,ref r){}
+
+		public Tabla(string path, int sheet, ref string r)
 		{
 			FileInfo f = new FileInfo(path);
 			if (!f.Exists) r = String.Format("No existe el archivo {0}", path);
 			else {
 				p = new ExcelPackage(f);
 				//epplus.codeplex.com
-				//TODO ver que excepciones lanza                
-				w = p.Workbook.Worksheets[1];//que payasada contar desde 1                
-
+				//TODO ver que excepciones lanza
+				int c = p.Workbook.Worksheets.Count;
+				if (1 <= sheet && sheet <= c){
+					w = p.Workbook.Worksheets[sheet];
+				} else {
+					r = string.Format("La hoja {0} no está en el rango 1-{1}", sheet, c);
+				}
+      
 			}
 		}
 

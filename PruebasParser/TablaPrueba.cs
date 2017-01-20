@@ -1,5 +1,4 @@
-﻿using System;
-using ParserDecenaTerrestre;
+﻿using ParserDecenaTerrestre;
 
 namespace PruebasParser
 {

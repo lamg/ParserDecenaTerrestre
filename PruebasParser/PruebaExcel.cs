@@ -53,20 +53,20 @@ namespace PruebasParser {
         }
 
         [Test()]
-        public void TestObtFilaExcel() {
+        public void Test_ObtFilaExcel() {
             string r = null;
             var t = new Tabla(garbarino, ref r);
             int l = t.Width;      
             int n = 0;
-            string[] f = Parser.ObtFila(t, ref r, ref n);
+            string[] f = Parser._ObtFila(t, ref r, ref n);
             Assert.IsTrue(f != null && f.Length == l && n == 1);
 
             n = 8;
-            f = Parser.ObtFila(t, ref r, ref n);
+            f = Parser._ObtFila(t, ref r, ref n);
             Assert.IsTrue(f != null && n == 11);
 
             n = 18;
-            f = Parser.ObtFila(t, ref r, ref n);
+            f = Parser._ObtFila(t, ref r, ref n);
             Assert.IsTrue(f == null && n == 19);
         }
 
@@ -95,7 +95,7 @@ namespace PruebasParser {
             //p es el arreglo de plantillas de la cual una debe
             //servir para parsear el documento
             string r = null;
-            Documento d = Parser.Parse(garbarino, p, ref r);
+            Documento d = Parser.LoadParse(garbarino, p, ref r);
 
             Assert.IsTrue(r == null && d != null && d.Tabla.GetLength(1) == 3);
         }
@@ -107,16 +107,16 @@ namespace PruebasParser {
 			string r = null;
 			Tabla t = new Tabla(book1, ref r);
 			int n = 3;
-			var f = Parser.ObtFila(t, ref r, ref n);
+			var f = Parser._ObtFila(t, ref r, ref n);
 			Assert.IsTrue(f != null);
 
-			Documento d = Parser.Parse(book1, p, ref r);
+			Documento d = Parser.LoadParse(book1, p, ref r);
 			Assert.IsTrue(d != null && d.Tabla.GetLength(0) == 3);
 
-			d = Parser.Parse(book1, p, 2, ref r);
+			d = Parser.LoadParse(book1, p, ref r,2);
 			Assert.IsTrue(d != null && r == null);
 
-			d = Parser.Parse(book1, p, 3, ref r);
+			d = Parser.LoadParse(book1, p, ref r, 3);
 			Assert.IsTrue(d == null && r != null);
 
 		}

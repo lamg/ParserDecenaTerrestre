@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace ParserDecenaTerrestre
 {
 	public static class Parser
-	{
+	{		
 		/// <summary>
 		/// Devuelve una instancia de Documento con
 		/// los datos de las filas y columnas importantes
@@ -29,12 +29,7 @@ namespace ParserDecenaTerrestre
 		/// no hubo error al reconocer el documento
 		/// </param>
 		/// <returns></returns>
-		public static Documento Parse(string path, string[][] plantillas, ref string r)
-		{
-			return Parse(path, plantillas, 1, ref r);
-		}
-
-		public static Documento Parse(string path, string[][] plantillas, int sheet, ref string r) { 
+		public static Documento LoadParse(string path, string[][] plantillas, ref string r, int sheet=1) { 
 			//la plantilla es un subconjunto de las columnas del excel
 			Documento d = null;
 			var t = new Tabla(path, sheet, ref r);
@@ -58,7 +53,7 @@ namespace ParserDecenaTerrestre
 			string[,] tabla;
 			Documento d = null;
 			int n = 0;
-			ordEncabezado = ObtEncabezado(t, perm, ref r, ref n);
+			ordEncabezado = _ObtEncabezado(t, perm, ref r, ref n);
 			if (r == null)
 			{
 				//el encabezado es un subconjunto de perm
@@ -67,7 +62,7 @@ namespace ParserDecenaTerrestre
 				//sabemos que el resultado será un arreglo
 				//igual a perm, por eso se usa este último
 				//para construir el documento
-				tabla = ObtTabla(t, ordEncabezado, ref r, ref n);
+				tabla = _ObtTabla(t, ordEncabezado, ref r, ref n);
 				//tabla es el cuerpo del documento
 				//a ser ordenado segun el orden definido en
 				//ordEncabezado, de esa forma queda
@@ -81,15 +76,15 @@ namespace ParserDecenaTerrestre
 			return d;
 		}
 
-		public static int[] ObtEncabezado(ITabla t, string[] perm, ref string r, ref int n)
+		public static int[] _ObtEncabezado(ITabla t, string[] perm, ref string r, ref int n)
 		{
-			string[] fila = ObtFila(t, ref r, ref n);
+			string[] fila = _ObtFila(t, ref r, ref n);
 			int[] ord = new int[perm.Length];
 			//ord es la posicion de cada elemento
 			//de perm en fila
 			if (r == null)
 			{
-				bool b = EsSub(perm, fila, ref ord);
+				bool b = _EsSub(perm, fila, ref ord);
 				//obtener el orden de la permutación
 				if (!b)
 					r = "El encabezado no es un subconjunto de las columnas predefinidas";
@@ -97,7 +92,7 @@ namespace ParserDecenaTerrestre
 			return ord;
 		}
 
-		public static bool EsSub(string[] a, string[] b, ref int[] ord)
+		public static bool _EsSub(string[] a, string[] b, ref int[] ord)
 		{
 			//a no debe tener elementos repetidos
 			//por eso debe usarse como parametro
@@ -125,7 +120,7 @@ namespace ParserDecenaTerrestre
 			//del cada elemento de a en b, si r.
 		}
 
-		public static string[] ObtFila(ITabla t, ref string r, ref int n)
+		public static string[] _ObtFila(ITabla t, ref string r, ref int n)
 		{
 			//n es la fila a obtener
 			string[] f = new string[t.Width];
@@ -157,7 +152,7 @@ namespace ParserDecenaTerrestre
 			//si no ha terminado el archivo
 		}
 
-		public static bool Vacía(ITabla t, int l, int n, ref string[] f, ref string r)
+		public static bool _Vacía(ITabla t, int l, int n, ref string[] f, ref string r)
 		{
 			bool b = true;
 			for (int j = 0; b && j != l; j++)
@@ -169,16 +164,16 @@ namespace ParserDecenaTerrestre
 			//b = todas las celdas están vacías
 		}
 
-		public static string[,] ObtTabla(ITabla t, int[] ord, ref string r, ref int n)
+		public static string[,] _ObtTabla(ITabla t, int[] ord, ref string r, ref int n)
 		{
 			bool b = true;
 			LinkedList<string[]> nt = new LinkedList<string[]>();
 			while (b)
 			{
-				string[] fila = ObtFila(t, ref r, ref n);
+				string[] fila = _ObtFila(t, ref r, ref n);
 				if (fila != null)
 				{
-					var fn = ExtSubOrd(ord, fila, n, ref r);
+					var fn = _ExtSubOrd(ord, fila, n, ref r);
 					if (r == null)
 					{
 						nt.AddLast(fn);
@@ -210,7 +205,7 @@ namespace ParserDecenaTerrestre
 			return rt;
 		}
 
-		public static string[] ExtSubOrd(int[] ord, string[] f, int n, ref string e)
+		public static string[] _ExtSubOrd(int[] ord, string[] f, int n, ref string e)
 		{
 			string[] r = new string[ord.Length];
 			for (int i = 0; e == null && i != ord.Length; i++)

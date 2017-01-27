@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace ParserDecenaTerrestre
 {
@@ -69,6 +70,20 @@ namespace ParserDecenaTerrestre
 				}
 			}
 			return s;
+		}
+
+		public string CalculateChecksum()
+		{
+			string dataToCalculate = ToString();
+			byte[] byteToCalculate = Encoding.ASCII.GetBytes(dataToCalculate);
+			int checksum = 0;
+			foreach (byte chData in byteToCalculate)
+			{
+				checksum += chData;
+			}
+			checksum &= 0xff;
+			string r = checksum.ToString("X2");
+			return r;
 		}
 	}
 }

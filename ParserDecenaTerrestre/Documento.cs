@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Security.Cryptography;
 
 namespace ParserDecenaTerrestre
 {
@@ -75,7 +76,7 @@ namespace ParserDecenaTerrestre
 		public string CalculateChecksum()
 		{
 			string dataToCalculate = ToString();
-			byte[] byteToCalculate = Encoding.ASCII.GetBytes(dataToCalculate);
+			byte[] byteToCalculate = Encoding.UTF8.GetBytes(dataToCalculate);
 			int checksum = 0;
 			foreach (byte chData in byteToCalculate)
 			{
@@ -83,6 +84,17 @@ namespace ParserDecenaTerrestre
 			}
 			checksum &= 0xff;
 			string r = checksum.ToString("X2");
+			return r;
+		}
+
+		public string CalculateHash()
+		{
+			string r = "";
+			var s = SHA256.Create();
+			byte[] bs = Encoding.UTF8.GetBytes(ToString());
+			byte[] rs = s.ComputeHash(bs);
+			char[] cs = Encoding.ASCII.GetChars(rs);
+			r = new string(cs);
 			return r;
 		}
 	}

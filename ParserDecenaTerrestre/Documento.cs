@@ -51,12 +51,24 @@ namespace ParserDecenaTerrestre
 
 		public override int GetHashCode()
 		{
-			return base.GetHashCode();
+			return ToString().GetHashCode();
 		}
 
 		public override string ToString()
 		{
-			return string.Format("[Documento: Encabezado={0}, Tabla={1}]", Encabezado, Tabla);
+			string s = "";
+			for (int i = 0; i != encabezado.Length; i++)
+			{
+				s += encabezado[i];
+			}
+			for (int i = 0; i != tabla.GetLength(0); i++)
+			{
+				for (int j = 0; j != tabla.GetLength(1); j++)
+				{
+					s += tabla[i, j];
+				}
+			}
+			return s;
 		}
 	}
 }

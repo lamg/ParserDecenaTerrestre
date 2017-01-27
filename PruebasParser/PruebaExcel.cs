@@ -116,6 +116,7 @@ namespace PruebasParser {
 			d = Parser.LoadParse(book1, p, ref r,2);
 			Assert.IsTrue(d != null && r == null);
 			Assert.IsTrue(d.Equals(d));
+			Assert.IsTrue(d.ToString() != null);
 
 			d = Parser.LoadParse(book1, p, ref r, 3);
 			Assert.IsTrue(d == null && r != null);

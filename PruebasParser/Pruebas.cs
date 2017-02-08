@@ -123,11 +123,12 @@ namespace PruebasParser
 
             tb = Parser._ObtTabla(t, ordEncabezado, ref r, ref n);
 
-            Assert.IsTrue(tb != null && r == null && t.Height == tb.GetLength(0) + 3);
+            Assert.IsTrue(tb != null && r == null && t.Height == tb.GetLength(0) + 4);
 
             //3 filas de total calculado
-            //+ 15 filas con contenido correcto (encabezado sin "Booking")= 18
-            //18 es la cantidad de filas de la tabla sin el encabezado
+			//+ 1 fila de encabezado
+            //+ 15 filas con contenido correcto = 19
+            //19 es la cantidad de filas de la tabla
         }
 
         [Test()]

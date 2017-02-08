@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-
 namespace ParserDecenaTerrestre
 {
 	public static class Parser
@@ -32,7 +31,18 @@ namespace ParserDecenaTerrestre
 		public static Documento LoadParse(string path, string[][] plantillas, ref string r, int sheet=1) { 
 			//la plantilla es un subconjunto de las columnas del excel
 			Documento d = null;
-			var t = new Tabla(path, sheet, ref r);
+			ITabla t;
+			t = new Tabla(path, sheet, ref r);
+			string tc = t.Celda(0, 0, ref r);
+
+			if (tc != null )
+			{
+				string[] sp = tc.Split(',');
+				//una celda con comas sirve para distinguir
+				//entre una tabla normal y una CSV
+				if (sp.Length >= 2)
+					t = new TablaCSV(path, sheet, ref r);
+			}
 			if (r == null)
 			{
 				bool b = true;
@@ -141,7 +151,7 @@ namespace ParserDecenaTerrestre
 				}
 				if (r == null) n++;
 			}
-			else if (a)
+			else if (a || n >= t.Height)
 			{
 				f = null;
 			}

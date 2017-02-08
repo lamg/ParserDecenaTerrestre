@@ -31,22 +31,30 @@ namespace ParserDecenaTerrestre
 
 		public int Height
 		{
-			get { return w.Dimension.Rows; }
+			get { return w == null ? 0 : w.Dimension.Rows; }
 		}
 
 		public int Width
 		{
-			get { return w.Dimension.Columns; }
+			get { return w == null ? 0 : w.Dimension.Columns; }
 		}
 
 		public string Celda(int i, int j, ref string r)
 		{
 			//TODO ver que excepciones lanza
-			var s = w.GetValue(i + 1, j + 1);//+1 porque los indices
-											 //comienzan en uno para w (lamentablemente)
-			string a = null;
-			if (s != null) a = s.ToString().Trim();
-			return a;
+			string s = null;
+			if (0 <= i && i < Height && 0 <= j && j < Width)
+			{
+				//+1 porque los indices
+				//comienzan en uno para w (lamentablemente
+				var o = w.GetValue(i + 1, j + 1);
+				if (o != null)
+					s = o.ToString().Trim();
+			}
+			else {
+				r = string.Format("{0}-{1} fuera de rango {2}-{3}", i, j, Width, Height);
+			}
+			return s;
 		}
 
 		public void Dispose()

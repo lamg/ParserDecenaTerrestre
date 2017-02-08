@@ -7,6 +7,7 @@ namespace PruebasParser {
     public class PruebaExcel {
         string garbarino = @"garbarino.xlsx";
         string book1 = @"Book1.xlsx";
+		string tourico = @"Tourico.xlsx";
         string[] perm = {
             "Fecha de Documento",
             "Fecha Out",
@@ -96,8 +97,8 @@ namespace PruebasParser {
             //servir para parsear el documento
             string r = null;
             Documento d = Parser.LoadParse(garbarino, p, ref r);
-
-            Assert.IsTrue(r == null && d != null && d.Tabla.GetLength(1) == 3);
+			var cs = d.CalculateChecksum();
+            Assert.IsTrue(r == null && d != null && d.Tabla.GetLength(1) == 3 && cs != null);
         }
 
 		[Test()]
@@ -117,15 +118,33 @@ namespace PruebasParser {
 			Assert.IsTrue(d != null && r == null);
 			Assert.IsTrue(d.Equals(d));
 			Assert.IsTrue(d.ToString() != null);
-			Assert.IsTrue(d.CalculateChecksum() != null);
+			var cs = d.CalculateChecksum();
+			Assert.IsTrue(cs != null);
 			var s = d.CalculateHash();
 			Assert.IsNotNullOrEmpty(s);
 
 			d = Parser.LoadParse(book1, p, ref r, 3);
 			Assert.IsTrue(d == null && r != null);
+		}
 
+		[Test()]
+		public void TestTourico()
+		{
+			string r = null;
+			var p = new string[] { "Doc#", "RL#", "Guest Name", "System Amount", "System Currency", "Local Amount", "Local Currency", "Commission", "Commission Currency", "Commission Local Currency ", "Supplier", "Reservation #", "No. of guests", "Service", "Service Status", "Invoice Type", "Invoice State", "Check In", "Check Out", "Booking Agency", "Booking Agent", "Agent ref #", "Reservation Date", "Inv" };
 
+			TablaCSV ts = new TablaCSV(tourico, 1, ref r);
+			Assert.IsTrue(r == null && ts.Width == p.Length);
 
+			int n = 1;
+			var ss = Parser._ObtFila(ts, ref r, ref n);
+			Assert.IsTrue(ss.Length == p.Length);
+
+			var d = Parser.Parse(ts, p, ref r);
+			Assert.IsTrue(r == null);
+
+			d = Parser.LoadParse(tourico, new string[][] { p }, ref r);
+			Assert.IsTrue(d != null && r == null);
 		}
     }
 }

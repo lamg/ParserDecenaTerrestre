@@ -135,15 +135,13 @@ namespace ParserDecenaTerrestre
 			//n es la fila a obtener
 			string[] f = new string[t.Width];
 
-			bool a = t.EsTotalCalculado(n);
-			while (a && n != t.Height)
+			while (n < t.Height && t.EsTotalCalculado(n))
 			{
 				n++;
-				a = t.EsTotalCalculado(n);
 			}
 			//las filas con totales calculados han sido saltadas
 			//o se ha llegado al final
-			if (n != t.Height)
+			if (n < t.Height)
 			{
 				for (int i = 0; r == null && i != t.Width; i++)
 				{
@@ -151,12 +149,12 @@ namespace ParserDecenaTerrestre
 				}
 				if (r == null) n++;
 			}
-			else if (a || n >= t.Height)
+			else if (n >= t.Height)
 			{
 				f = null;
 			}
 
-			return n <= t.Height && r == null ? f : null;
+			return f;
 			//null significa que terminó el archivo
 			//f es la fila sin total calculado más proxima
 			//si no ha terminado el archivo

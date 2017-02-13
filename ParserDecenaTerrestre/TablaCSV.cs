@@ -1,27 +1,39 @@
 ﻿using System;
-using OfficeOpenXml;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace ParserDecenaTerrestre
 {
 	public class TablaCSV:ITabla
 	{
-		ExcelWorksheet w;
-		ExcelPackage p;
+		string[,] p;
 
-		public TablaCSV(string path, int sheet, ref string r)
+		public TablaCSV(string path, string sep, ref string r)
 		{
 			FileInfo f = new FileInfo(path);
 			if (!f.Exists) r = string.Format("El archivo {0} no existe", path);
 			else {
-				p = new ExcelPackage(f);
-				int c = p.Workbook.Worksheets.Count;
-				if (1 <= sheet && sheet <= c)
+				StreamReader a = f.OpenText();
+				var np = new List<string[]>();
+				while (!a.EndOfStream)
 				{
-					w = p.Workbook.Worksheets[sheet];
+					var n = a.ReadLine().Split(sep.ToCharArray());
+					np.Add(n);
 				}
-				else {
-					r = string.Format("La hoja {0} no está en el rango 1-{1}", sheet, c);
+				p = new string[np.Count, np.Max(x => x.Length)];
+				for (int i = 0; i != p.GetLength(0); i++)
+				{
+					for (int j = 0; j != p.GetLength(1); j++)
+					{
+						if (j >= np[i].Length)
+						{
+							p[i, j] = "";
+						}
+						else {
+							p[i, j] = np[i][j];
+						}
+					}
 				}
 			}
 		}
@@ -30,7 +42,7 @@ namespace ParserDecenaTerrestre
 		{
 			get
 			{
-				return w.Dimension.Rows;
+				return p.GetLength(0);
 			}
 		}
 
@@ -38,29 +50,19 @@ namespace ParserDecenaTerrestre
 		{
 			get
 			{
-				var s = w.GetValue(1,1).ToString();
-				var n = s.Split(',').Length;
-				return n;
+				return p.GetLength(1);
 			}
 		}
 
 		public string Celda(int i, int j, ref string r)
 		{
 			string v = null;
-			if (0 <= i && i < Height)
+			if (0 <= i && i < Height && 0 <= j && j < Width)
 			{
-				var s = w.GetValue(i + 1, 1).ToString();
-				var ss = s.Split(',');
-				if (0 <= j && j < ss.Length)
-				{
-					v = ss[j].Trim('"');
-				}
-				else {
-					r = string.Format("La columna {0} no esta en el rango {1}-{2}", j, 0, ss.Length);
-				}
+				v = p[i, j];
 			}
 			else {
-				r = string.Format("La fila {0} no esta en el rango {1}-{2}", i, 0, Height);
+				r = string.Format("{0}-{1} no esta en el rango {2}-{3}", i, j, Height, Width);
 			}
 
 			return v;
@@ -68,7 +70,14 @@ namespace ParserDecenaTerrestre
 
 		public bool EsTotalCalculado(int i)
 		{
-			return false;
+			int c = 0;
+			string r = null;
+			for (int j = 0; r == null && j != Width; j++)
+			{
+				var s = Celda(i, j, ref r);
+				c += string.IsNullOrEmpty(s) ? 1 : 0;
+			}
+			return c == Width || c == Width - 2;
 		}
 	}
 }

@@ -16,6 +16,10 @@ namespace ParserDecenaTerrestre
 		///        new string[] {"Importe","Moneda","Factura" } };
 		/// string r = null;
 		/// Documento d = Parse(path, pls, ref r);
+		/// En caso que el documento tenga extensión ".xlsx" lo intenta
+		/// parsear como un Excel (hoja 1) y en caso de que tenga extensión ".csv"
+		/// lo intenta parsear como un CSV con ";" como separador. Si no
+		/// reconoce la extensión devuelve un error.
 		/// </summary>
 		/// <param name="path">Camino al documento de Excel</param>
 		/// <param name="plantillas">
@@ -28,32 +32,56 @@ namespace ParserDecenaTerrestre
 		/// no hubo error al reconocer el documento
 		/// </param>
 		/// <returns></returns>
-		public static Documento LoadParse(string path, string[][] plantillas, ref string r, int sheet=1) { 
+		public static Documento LoadParse(string path, string[][] plantillas, ref string r) {
+			Documento d = null;
+			if (path.EndsWith(".xlsx", StringComparison.Ordinal))
+			{
+				d = LoadParseExcel(path, plantillas, ref r);
+			}
+			else if (path.EndsWith(".csv", StringComparison.Ordinal))
+			{
+				d = LoadParseCSV(path, ";", plantillas, ref r);
+			}
+			else {
+				r = string.Format("Extensión de {0} no reconocida", path);
+			}
+			return d;
+		}
+
+		public static Documento LoadParseExcel(string path, string[][] ps, ref string r, int sheet = 1)
+		{
 			//la plantilla es un subconjunto de las columnas del excel
 			Documento d = null;
-			ITabla t;
-			t = new Tabla(path, sheet, ref r);
-			string tc = t.Celda(0, 0, ref r);
+			ITabla t = new Tabla(path, sheet, ref r);
 
-			if (tc != null )
-			{
-				string[] sp = tc.Split(',');
-				//una celda con comas sirve para distinguir
-				//entre una tabla normal y una CSV
-				if (sp.Length >= 2)
-					t = new TablaCSV(path, sheet, ref r);
-			}
 			if (r == null)
 			{
-				bool b = true;
-				for (int i = 0; b && i != plantillas.Length; i++)
-				{
-					r = null;
-					d = Parse(t, plantillas[i], ref r);
-					b = r != null;
-				}
+				d = BuscarPlantilla(t, ps, ref r);
 			}
-			if (d != null) r = null;
+			return d;
+		}
+
+		public static Documento LoadParseCSV(string path, string sep, string[][] plantillas, ref string r)
+		{
+			Documento d = null;
+			ITabla t = new TablaCSV(path, sep, ref r);
+			if (r == null)
+			{
+				d = BuscarPlantilla(t, plantillas, ref r);
+			}
+			return d;
+		}
+
+		static Documento BuscarPlantilla(ITabla t, string[][] plantillas, ref string r)
+		{
+			Documento d = null;
+			bool b = true;
+			for (int i = 0; b && i != plantillas.Length; i++)
+			{
+				r = null;
+				d = Parse(t, plantillas[i], ref r);
+				b = r != null;
+			}
 			return d;
 		}
 
